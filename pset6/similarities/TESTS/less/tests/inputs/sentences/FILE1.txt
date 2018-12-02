@@ -1,0 +1,11 @@
+This is File 1.
+
+This is a sentence
+that is going to be split
+in both files.
+
+Another sentence for you.
+
+May the Force be with you.
+
+Life, the Universe and everything else.

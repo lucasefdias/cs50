@@ -1,0 +1,38 @@
+<table class="table table-sm">
+    <thead>
+        <!-- First row: string s2 -->
+        <tr>
+            {% for j in range(3) %}
+                <th></th>
+            {% endfor %}
+            {% for char in s2 %}
+                <th>{{ char }}</th>
+            {% endfor %}
+        </tr>
+        <!-- Second row: matrix col indexes -->
+        <tr>
+            {% for j in range(2) %}
+                <th></th>
+            {% endfor %}
+            {% for j in range(s2|length + 1) %}
+                <th>{{ j }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <!-- Loop through all rows in matrix to build the body of the table -->
+    <tbody>
+        {% for i in range(s1|length + 1) %}
+            <tr>
+                {% if i == 0 %}
+                    <th></th>
+                {% else %}
+                    <th>{{ s1[i- 1] }}</th>
+                {% endif %}
+                <th>{{ i }}</th>
+                {% for j in range(s2|length + 1) %}
+                    <td>{{ matrix[i][j][0] }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
