@@ -60,12 +60,12 @@ Change owed: 0.41
 
 ### Credit
 Implement a program that determines whether a provided credit card number is valid according to Luhn’s algorithm.<br/>
+[Full specification](https://docs.cs50.net/2018/x/psets/1/credit/credit.html)
 ```
 $ ./credit
 Number: 378282246310005
 AMEX
 ```
-[Full specification](https://docs.cs50.net/2018/x/psets/1/credit/credit.html)
 
 ## Problem Set 2: Crypto
 [Instructions for PSET2](https://docs.cs50.net/2018/x/psets/2/pset2.html)<br/>
@@ -88,9 +88,46 @@ ciphertext: HFNLP
 ```
 
 ### Crack
-Implement a program that cracks passwords, per the below.
+Implement a program that cracks passwords, per the below.<br/>
 [Full specification](https://docs.cs50.net/2018/x/psets/2/crack/crack.html)
 ```
 $ ./crack 50fkUxYHbnXGw
 rofl
 ```
+
+## Problem Set 3: Music
+Write a program that converts a sequence of notes read fom a text file into frequencies and synthesize the resulting song.<br/>
+[Full specification](https://docs.cs50.net/2018/x/psets/3/music/music.html)
+
+## Problem Set 4: Forensics
+[Instructions for PSET4](https://docs.cs50.net/2018/x/psets/4/pset4.html)
+### Whodunit
+Answer some questions and then implement a program that reveals a hidden message in a BMP, per the below.<br/>
+[Full specification](https://docs.cs50.net/2018/x/psets/4/whodunit/whodunit.html)
+```
+$ ./whodunit clue.bmp verdict.bmp
+```
+
+### Resize (less comfortable)
+Implement a program that resizes BMPs, per the below.<br/>
+[Full specification](https://docs.cs50.net/2018/x/psets/4/resize/less/resize.html)
+```
+$ ./resize 4 small.bmp large.bmp
+```
+
+
+### Resize (more comfortable)
+Implement a program that resizes BMPs, per the below.<br/>
+[Full specification](https://docs.cs50.net/2018/x/psets/4/resize/more/resize.html)
+```
+$ ./resize .25 large.bmp small.bmp
+$ ./resize 4 small.bmp large.bmp
+```
+
+### Recover
+Implement a program that recovers JPEGs from a forensic image, per the below.<br/>
+[Full specification](https://docs.cs50.net/2018/x/psets/4/recover/recover.html)
+```
+$ ./recover card.raw
+```
+
