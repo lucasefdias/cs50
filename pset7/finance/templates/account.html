@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Account
+{% endblock %}
+
+{% block main %}
+
+    <div class="form-group">
+        <h2 class="page-title">Account</h2>
+    </div>
+    <div class="form-group account-div">
+        <div class="account-label">
+            <h5>Username:</h5>
+        </div>
+        <div class="account-info">
+            <p class="user-info">{{ username }}</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <a href="/password" class="btn btn-primary">Change password</a>
+    </div>
+
+{% endblock %}

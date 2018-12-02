@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Cash
+{% endblock %}
+
+{% block main %}
+
+    <div class="form-group">
+        <div>
+            <h5 class="cash-label">Current balance:</h5>
+        </div>
+        <div>
+            <p class="cash-balance">{{ cash }}</p>
+        </div>
+    </div>
+
+    <form class="cash-form" action="/cash" method="post">
+        <div class="form-group">
+            <div>
+                <h5 class="cash-label">Choose an operation:</h5>
+            </div>
+
+            <input type="radio" name="operation" value="add"> Add cash<br>
+            <input type="radio" name="operation" value="out"> Cash out<br>
+        </div>
+        <div class="form-group">
+            <input class="form-control" name="amount" placeholder="Amount" type="number" min="0"/>
+        </div>
+        <button class="btn btn-primary" type="submit">Update balance</button>
+    </form>
+
+{% endblock %}
