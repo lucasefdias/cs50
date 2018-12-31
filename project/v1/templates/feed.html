@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Feed
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <form class="post-form" action="/feed" method="POST">
+
+        <div class="form-group">
+            <textarea class="form-control textarea" name="content" placeholder="Share something here." rows="3" cols="50"></textarea>
+        </div>
+
+        <div>
+            <button class="btn btn-md btn-success" type="submit">Post</button>
+        </div>
+
+    </form>
+
+    <h3>Your feed</h3>
+
+    {% for post in posts %}
+        <div class="post row">
+            <div class="post-picture col-md-3">
+                <img class="round-medium-pic" src="/{{ post.author_picture }}" alt="{{ post.author_first }} {{ post.author_last }}"/>
+            </div>
+
+            <div class="post-data col-md-9">
+                <div class="post-metadata row">
+                    <div class="post-author-name col-md-3">
+                        <a href="/profile/{{ post.author_id }}">{{ post.author_first }} {{ post.author_last }}</a>
+                    </div>
+                    <div class="post-date-published col-md-5 text-muted">
+                        Published on {{ post.date_published }}
+                    </div>
+
+                    {% if post.author_id == session.user_id %}
+                    <div class="post-edit col-md-2">
+                        <a class="btn btn-sm btn-success" href="/post/{{ post.id }}/edit">Edit post</a>
+                    </div>
+                    <div class="post-delete col-md-2">
+                        <a class="btn btn-sm btn-danger" href="/post/{{ post.id }}/delete">Delete post</a>
+                    </div>
+                    {% endif %}
+                </div>
+                <hr/>
+                <div class="post-content row">
+                    <p class="col-sm-12">{{ post.content }}</p>
+                </div>
+                <div class="post-comment-btn">
+                    <a class="btn btn-md btn-info" href="/post/{{ post.id }}">Comment</a>
+                </div>
+            </div>
+
+        </div>
+    {% endfor %}
+
+{% endblock %}

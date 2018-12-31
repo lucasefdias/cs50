@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Account
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <div class="form">
+        <div>
+            <div>
+                <img class="round-big-pic" src="/{{ user.picture }}" alt="{{ user.first }} {{ user.last }}"/>
+            </div>
+            <div>
+                <h1>{{ user.first }} {{ user.last }}</h1>
+            </div>
+            <div>
+                <h6><em>Member since {{ user.created_at }}</em></h6>
+            </div>
+        </div>
+        <div class="form-group">
+            <a class="btn btn-md btn-danger" href="/account/delete">Delete account</a>
+        </div>
+
+        <hr/>
+
+
+        <div class="form-group">
+            <form action="/account" method="POST">
+
+                <div class="form-group">
+                    <div class="form-row">
+
+                        <label class="form-label col-form-label col-md-3" for="email">Email:</label>
+                        <input class="form-control col-md-6" name="email" type="email" placeholder="E-mail" value="{{ user.email }}">
+
+                        <div class="col-md-3">
+                            <button class="btn btn-md btn-success" type="submit">Update e-mail</button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <a class="btn btn-md btn-success" href="/password/change">Change password</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}

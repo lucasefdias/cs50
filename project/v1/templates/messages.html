@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Messages
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <h3 class="form-group">Your messages</h3>
+
+    <div class="row container-div">
+        <div class="col-sm-4 conversations-div">
+            {% for conversation in conversations %}
+            <div class="row conversation">
+                <div class="col-md-3">
+                    <img class="round-small-pic" src="/{{ conversation.interlocutor_picture }}" alt="{{ conversation.interlocutor_first }} {{ conversation.interlocutor_last }}"/>
+                </div>
+                <div class="conversation-data col-md-5">
+                    <a class="interlocutor-name" href="/messages/{{ conversation.id }}/{{ conversation.interlocutor_real_id }}">{{ conversation.interlocutor_first }} {{ conversation.interlocutor_last }}</a>
+                </div>
+                <div class="conversation-data col-md-4">
+                    <h6 class="text-muted"><em>{{ conversation.last_updated }}</em></h6>
+                </div>
+            </div>
+            <hr/>
+            {% endfor %}
+        </div>
+        <div class="col-sm-8 messages-div">
+            <p class="text-muted">
+                {% if conversations %}
+                    Select a conversation to visualize all messages here.
+                {% else %}
+                    You have no conversations.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+{% endblock %}

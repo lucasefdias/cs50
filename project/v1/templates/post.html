@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Post
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <div class="post row">
+
+        <div class="post-picture col-md-3">
+            <img class="round-medium-pic" src="/{{ post.author_picture }}" alt="{{ post.author_first }} {{ post.author_last }}"/>
+        </div>
+
+        <div class="post-data col-md-9">
+            <div class="post-metadata row">
+                <div class="post-author-name col-md-3">
+                    <a href="/profile/{{ post.author_id }}">{{ post.author_first }} {{ post.author_last }}</a>
+                </div>
+                <div class="post-date-published col-md-5 text-muted">
+                    Published on {{ post.date_published }}
+                </div>
+
+                {% if post.author_id == session.user_id %}
+                <div class="post-edit col-md-2">
+                    <a class="btn btn-sm btn-success" href="/post/{{ post.id }}/edit">Edit post</a>
+                </div>
+                <div class="post-delete col-md-2">
+                    <a class="btn btn-sm btn-danger" href="/post/{{ post.id }}/delete">Delete post</a>
+                </div>
+                {% endif %}
+            </div>
+            <hr/>
+            <div class="post-content row">
+                <p class="col-sm-12">{{ post.content }}</p>
+            </div>
+
+            <div class="row comments-header">
+                <h6 class="col-sm-12 text-left">Comments</h6>
+            </div>
+
+            {% for comment in comments %}
+            <div class="comment">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="comment-picture">
+                            <img class="round-small-pic" src="/{{ comment.author_picture }}" alt="{{ comment.author_first }} {{ comment.author_last }}"/>
+                        </div>
+                        <div class="comment-author">
+                            <a href="/profile/{{ comment.author_id }}">{{ comment.author_first }} {{ comment.author_last }}</a>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-8 text-muted">
+                                Published on {{ comment.date_published }}
+                            </div>
+
+                            {% if comment.author_id == session.user_id %}
+                            <div class="comment-edit col-md-2">
+                                <a class="btn btn-sm btn-success" href="/comment/{{ comment.id }}/edit">Edit</a>
+                            </div>
+                            <div class="comment-delete col-md-2">
+                                <a class="btn btn-sm btn-danger" href="/comment/{{ comment.id }}/delete">Delete</a>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="comment-content row">
+                            <div class="col">
+                                <p>{{ comment.content }}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+
+            <form action="/post/{{ post.id }}" method="POST">
+
+                <div class="form-group form-row">
+                    <div class="col-md-2"></div>
+                    <textarea class="form-control col-md-8" name="content" placeholder="Write you comment here."></textarea>
+                    <div class="col-md-2"></div>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-info" type="submit">Post comment</button>
+                </div>
+
+            </form>
+    </div>
+
+{% endblock %}

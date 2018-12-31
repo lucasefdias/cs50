@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Comment Edit
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <form class="post row" action="/comment/{{ comment.id }}/edit" method="POST">
+
+        <div class="post-picture col-md-3">
+            <img class="round-medium-pic" src="/{{ comment.author_picture }}" alt="{{ comment.author_first }} {{ comment.author_last }}"/>
+        </div>
+
+        <div class="post-data col-md-9">
+            <div class="post-metadata row">
+                <div class="post-author-name col-md-3">
+                    <a href="/profile/{{ comment.author_id }}">{{ comment.author_first }} {{ comment.author_last }}</a>
+                </div>
+                <div class="post-date-published col-md-5 text-muted">
+                    Published on {{ comment.date_published }}
+                </div>
+
+                {% if comment.author_id == session.user_id %}
+                <div class="post-edit col-md-1"></div>
+                <div class="post-delete col-md-3">
+                    <a class="btn btn-sm btn-danger" href="/comment/{{ comment.id }}/delete">Delete comment</a>
+                </div>
+                {% endif %}
+            </div>
+            <hr/>
+            <div class="post-content row">
+                <div class="col-md-11">
+                    <textarea class="form-control" name="content" placeholder="Share something here." rows="3" cols="50">{{ comment.content }}</textarea>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+            <div class="form-group row">
+                <button class="btn btn-md btn-success" type="submit">Update comment</button>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

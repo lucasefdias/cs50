@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Search Results
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <h3>Search results</h3>
+
+    <p>
+        Found {{ results|length }} match{% if results|length != 1 %}es{% endif %} for "{{ query }}"
+    </p>
+
+    {% for result in results %}
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="result col-md-6">
+            <div class="result-data row">
+                <div class="col-md-4">
+                    <img class="round-small-pic" src="/{{ result.picture }}" alt="{{ result.first }} {{ result.last }}"/>
+                </div>
+                <div class="col-md-4">
+                    <a href="/profile/{{ result.id }}">{{ result.first }} {{ result.last }}</a>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+
+    {% endfor %}
+
+{% endblock %}

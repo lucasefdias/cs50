@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block styles %}
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link href="/static/landing.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+<!-- No navbar on landing page -->
+{% block navbar %}
+{% endblock %}
+
+{% block main %}
+
+    <div id="landing-header" class="jumbotron">
+        <h2 class="display-4">Stage 50</h2>
+        <h1 class="display-4">Connect, create, play</h1>
+        <p class="lead"><span class="brand-name">Stage 50</span> is a social network for music professionals. Register and connect with other people and bring your music to the world!</p>
+        <hr class="my-4">
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Login</a>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}" role="button">Register</a>
+        </p>
+    </div>
+
+{% endblock %}
