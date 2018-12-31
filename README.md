@@ -1,7 +1,8 @@
 # HarvardX CS50: Introduction to Computer Science (edX 2018)
 These are all my solutions to Harvard CS50's Problem Sets for the edX 2018 edition.<br/>
 [Link to CS50 on edX](https://courses.edx.org/courses/course-v1:HarvardX+CS50+X/course/)<br/>
-[Course's Syllabus](https://docs.cs50.net/2018/x/syllabus.html)<br/>
+[Course's Syllabus](https://docs.cs50.net/2018/x/syllabus.html)<br/><br/>
+**Disclaimer : The material in this repository is intended as portfolio to showcase the projects I have built during the course. I do not claim to have everything 100% error free. Please use caution when using the ideas here for production code. I will keep updating this code as I find bugs and/or find any improvements.**<br/><br/>
 
 ## Problem Set 0
 Build a program in Scratch to start getting familiar with basic programming concepts.<br/>
