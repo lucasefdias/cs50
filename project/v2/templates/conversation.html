@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Messages
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <h3 class="form-group">Your messages</h3>
+
+    <div class="row container-div">
+        <div class="col-sm-4 conversations-div">
+            {% for conversation in conversations %}
+            {% if conversation.id == conversation_id %}
+            <div class="row conversation highlight">
+            {% else %}
+            <div class="row conversation">
+            {% endif %}
+                <div class="col-md-3">
+                    <img class="round-small-pic" src="/{{ conversation.interlocutor_picture }}" alt="{{ conversation.interlocutor_first }} {{ conversation.interlocutor_last }}"/>
+                </div>
+                <div class="conversation-data col-md-5">
+                    <a class="interlocutor-name" href="/messages/{{ conversation.id }}/{{ conversation.interlocutor_real_id }}">{{ conversation.interlocutor_first }} {{ conversation.interlocutor_last }}</a>
+                </div>
+                <div class="conversation-data col-md-4">
+                    <h6 class="last-updated text-muted"><em>{{ conversation.last_updated }}</em></h6>
+                </div>
+            </div>
+            <hr/>
+            {% endfor %}
+        </div>
+        <div class="col-sm-8 messages-div">
+            <div class="messages">
+                {% for message in messages %}
+            <div class="message row">
+                {% if session.user_id != message.sender_id %}
+                <!-- Interlocutor messages -->
+                <div class="interlocutor-div row">
+                    <div class="picture-div col-md-3">
+                        <div class="picture">
+                            <img class="round-small-pic" src="/{{ message.sender_picture }}" alt="{{ messages.sender_first }} {{ messages.sender_last }}"/>
+                        </div>
+                    </div>
+                    <div class="message-content col-md-8">
+                        <p>
+                            {{ message.content }}
+                        </p>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                {% else %}
+                <!-- User messages -->
+                <div class="user-div row">
+                    <div class="col-md-4"></div>
+                    <div class="message-content col-md-8">
+                        <p>
+                            {{ message.content }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            </div>
+
+            <!-- MESSAGE FORM -->
+            <form class="form-row form-group message-form" action="/messages/{{ conversation_id }}/{{ interlocutor_id }}" method="POST">
+
+                <div class="col-md-8">
+                    <textarea class="form-control" name="content" placeholder="Write your message here." rows="2" cols="50"></textarea>
+                </div>
+
+                <div class="col-md-4">
+                    <button class="btn btn-md btn-info" type="submit">Send message</button>
+                </div>
+
+            </form>
+        </div>
+
+
+    </div>
+{% endblock %}

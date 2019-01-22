@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <div class="user-auth-form">
+
+        <h1 class="form-group">Register</h1>
+
+        <form action="/register" method="POST">
+
+            <div class="form-group">
+                <input class="form-control" name="first" type="text" placeholder="First name">
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="last" type="text" placeholder="Last name">
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="email" type="email" placeholder="E-mail">
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="password" type="password" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="confirmation" type="password" placeholder="Confirm password">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-lg btn-success" type="submit">Register</button>
+            </div>
+
+        </form>
+
+        <p>
+            Already registered? Click
+            <a href="{{ url_for('login') }}">here</a>
+            to log in!
+        </p>
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,527 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Edit Profile
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    var user = {{ user|tojson|safe }};
+</script>
+<script src="/static/profile_edit.js"></script>
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <div>
+        <h2>Edit Profile</h2>
+    </div>
+
+    <section id="personal-info">
+        <form class="form" action="/profile/{{ session.user_id }}/edit" method="POST" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <a href="/profile/{{ session.user_id }}">Back to profile</a>
+            </div>
+
+            <div class="form-group">
+                <h6><em>Last updated at {{ user.updated_at }}</em></h6>
+            </div>
+
+            <div class="form-group">
+                <img class="round-big-pic" src="/{{ user.picture }}" alt="{{ user.first }} {{ user.last }}"/>
+                <input class="form-control-file" name="picture" type="file" accept="image/png, image/jpeg"/>
+            </div>
+
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col">
+                        <input class="form-control" name="first" type="text" value="{{ user.first }}" placeholder="First name">
+                    </div>
+                    <div class="col">
+                        <input class="form-control" name="last" type="text" value="{{ user.last }}"  placeholder="Last name">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col-md-5"></div>
+                    <div class="form-label col-form-label col-md-2">
+                        <h5>Birth Date:</h5>
+                    </div>
+                    <div class="col-md-5"></div>
+                </div>
+                <div class="form-row">
+                    <div class="col-md-4"></div>
+                    <input class="form-control col-md-4" name="birth" type="date" value="{{ user.birth }}" placeholder="Birth Date"/>
+                    <div class="col-md-4"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div>
+                    <h5>Gender:</h5>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input id="genderRadio[Female]" class="form-check-input" name="gender" type="radio" value="Female"/>
+                    <label class="form-check-label" for="genderRadio[Female]">Female</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input id="genderRadio[Male]" class="form-check-input" name="gender" type="radio" value="Male"/>
+                    <label class="form-check-label" for="genderRadio[Male]">Male</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input id="genderRadio[Other]" class="form-check-input" name="gender" type="radio" value="Other"/>
+                    <label class="form-check-label" for="genderRadio[Other]">Other</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input id="genderRadio[RatherNotSay]" class="form-check-input" name="gender" type="radio" value="Rather not say"/>
+                    <label class="form-check-label" for="genderRadio[RatherNotSay]">Rather not say</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <h5>Bio:</h5>
+                <textarea class="form-control" cols=50 rows=5 name="bio">{% if user.bio != None %}{{ user.bio }}{% endif %}</textarea>
+            </div>
+
+            <button class="btn btn-lg btn-success" type="submit">Update profile</button>
+
+        </form>
+
+    </section>
+
+    <section id="location">
+        <h4>Location:</h4>
+        <div class="form">
+            <form id="locationSearch">
+                <div class="form-group form-row">
+                    <div class="col-md-2">
+                        <label class="form-label col-form-label" for="locationString"><strong>Search a location:</strong></label>
+                    </div>
+                    <div class="col-md-10">
+                        <input class="form-control" type="search" id="locationString" name="locationString" placeholder="City, State, Country"/>
+                    </div>
+                </div>
+            </form>
+
+            <form action="/location" method="POST">
+                <div class="form-group form-row">
+                    <div class="col-md-4">
+                        <label class="form-label col-form-label" for="country">Country:</label>
+                        <input id="country" class="form-control" type="text" name="country" placeholder="Country" readonly
+                        {% if location != None %}
+                            value="{{ location.country }}"
+                        {% endif %}
+                        />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label col-form-label" for="state">State:</label>
+                        <input id="state" class="form-control" type="text" name="state" placeholder="State" readonly
+                        {% if location != None %}
+                            value="{{ location.admin1 }}"
+                        {% endif %}
+                        />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label col-form-label" for="city">City:</label>
+                        <input id="city" class="form-control" type="text" name="city" placeholder="City" readonly
+                        {% if location != None %}
+                            value="{{ location.city }}"
+                        {% endif %}
+                        />
+                    </div>
+                </div>
+
+                <div class="hidden">
+                    <input id="geoname_id" class="form-control" type="number" name="geoname_id" placeholder="geoname_id" readonly
+                        {% if location != None %}
+                            value="{{ location.geoname_id }}"
+                        {% endif %}
+                        />
+                    <input id="full_name" class="form-control" type="text" name="full_name" placeholder="full_name" readonly
+                        {% if location != None %}
+                            value="{{ location.full_name }}"
+                        {% endif %}
+                        />
+                    <input id="country_isoalpha2" class="form-control" type="text" name="country_isoalpha2" placeholder="country_isoalpha2" readonly
+                        {% if location != None %}
+                            value="{{ location.country_isoalpha2 }}"
+                        {% endif %}
+                        />
+                    <input id="country_isoalpha3" class="form-control" type="text" name="country_isoalpha3" placeholder="country_isoalpha3" readonly
+                        {% if location != None %}
+                            value="{{ location.country_isoalpha3 }}"
+                        {% endif %}
+                        />
+                    <input id="admin1_code" class="form-control" type="text" name="admin1_code" placeholder="admin1_code" readonly
+                        {% if location != None %}
+                            value="{{ location.admin1_code }}"
+                        {% endif %}
+                        />
+                    <input id="latitude" class="form-control" type="number" step="0.000000001" name="latitude" placeholder="latitude" readonly
+                        {% if location != None %}
+                            value="{{ location.latitude }}"
+                        {% endif %}
+                        />
+                    <input id="longitude" class="form-control" type="number" step="0.000000001" name="longitude" placeholder="longitude" readonly
+                        {% if location != None %}
+                            value="{{ location.longitude }}"
+                        {% endif %}
+                        />
+                </div>
+
+                <div class="form-group form-row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <button class="btn btn-lg btn-success" type="submit">Update location</button>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+            </form>
+
+        </div>
+
+    </section>
+
+    <section id="occupations">
+        <h4>Occupations</h4>
+
+        <div id="newOccupationForm" class="form">
+            <form action="/occupations/new" method="POST">
+
+                <div class="form-group">
+
+                    <div class="form-row">
+                        <div class="col-md-12">
+                            <h5>New Occupation</h5>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <input class="form-control" name="role" type="text" placeholder="What do you do?">
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-5"></div>
+                        <div class="col-md-2">
+                            <div>At</div>
+                        </div>
+                        <div class="col-md-5"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <input class="form-control" name="entity" type="text" placeholder="Where?">
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-5">
+                            <label class="form-label" for="newOccupationStart">From</label>
+                            <input id="newOccupationStart" class="form-control" name="start" type="date"/>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label" for="newOccupationEnd">Until</label>
+                            <input id="newOccupationEnd" class="form-control" name="end" type="date"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                <div class="form-group form-row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <button class="btn btn-md btn-success" type="submit">Add new occupation</button>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+
+            </form>
+        </div>
+
+
+        <h5>Edit Occupations</h5>
+        {% for occupation in occupations %}
+        <div class="form">
+            <form action="/occupations/{{ occupation.id }}/edit" method="POST">
+
+                <div class="form-group">
+
+                    <div class="form-row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <input class="form-control" name="role" type="text" value="{{ occupation.role }}" placeholder="What do you do?">
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-5"></div>
+                        <div class="col-md-2">
+                            <div>At</div>
+                        </div>
+                        <div class="col-md-5"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <input class="form-control" name="entity" type="text" value="{{ occupation.entity }}" placeholder="Where?">
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-5">
+                            <label class="form-label">From</label>
+                            <input class="form-control" name="start" type="date" value="{{ occupation.start }}"/>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label">Until</label>
+                            <input class="form-control" name="end" type="date" value="{{ occupation.end }}"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                <div class="form-group form-row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-2">
+                        <button class="btn btn-md btn-success" type="submit">Update occupation</button>
+                    </div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-2">
+                        <a class="btn btn-md btn-danger" href="/occupations/{{ occupation.id }}/delete">Delete occupation</a>
+                    </div>
+                    <div class="col-md-3"></div>
+                </div>
+
+            </form>
+        </div>
+        {% endfor %}
+
+    </section>
+
+
+    <section id="instruments">
+        <h4>Instruments</h4>
+
+        <form class="form" action="/instruments/new" method="POST">
+
+            <div class="form-group">
+
+                <div class="form-row">
+                    <div class="col-md-12">
+                        <h5>New Instrument</h5>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <label class="form-label" for="newOccupationStart">Instrument:</label>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label" for="proficiency">Proficiency:</label>
+                    </div>
+
+                    <div class="col-md-3"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <input class="form-control" name="instrument" type="text" placeholder="What instrument do you play?"/>
+                    </div>
+
+                    <div class="col-md-3">
+                        <select class="form-control" name="proficiency">
+                            <option value="None" selected disabled>Select your skill level</option>
+                            {% for skill_level in proficiency %}
+                                {% if skill_level.id != 0 %}
+                                    <option value="{{ skill_level.id }}">{{ skill_level.level }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button class="btn btn-md btn-success col-md-3" type="submit">Add new instrument</button>
+                </div>
+
+            </div>
+
+        </form>
+
+        <h5>Edit Instruments</h5>
+
+        {% for instrument in instruments %}
+        <form class="form" action="/instruments/edit/{{ instrument.id }}" method="POST">
+
+            <div class="form-group">
+
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <label class="form-label" for="newOccupationStart">Instrument:</label>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label" for="proficiency">Proficiency:</label>
+                    </div>
+
+                    <div class="col-md-4"></div>
+                </div>
+
+                <div class="form-row form-group">
+                    <div class="col-md-6">
+                        <input class="form-control" name="instrument" type="text" value="{{ instrument.instrument }}" placeholder="What instrument do you play?"/>
+                    </div>
+
+                    <div class="col-md-2">
+                        <select class="form-control" name="proficiency">
+                            <option value="None" disabled>Select your skill level</option>
+                            {% for skill_level in proficiency %}
+                                {% if skill_level.id != 0 %}
+                                    {% if skill_level.id == instrument.proficiency_id %}
+                                        <option value="{{ skill_level.id }}" selected>{{ skill_level.level }}</option>
+                                    {% else %}
+                                        <option value="{{ skill_level.id }}">{{ skill_level.level }}</option>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-md btn-success" type="submit">Update instrument</button>
+                    </div>
+                    <div class="col-md-2">
+                        <a class="btn btn-md btn-danger" href="/instruments/{{ instrument.id }}/delete">Delete instrument</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+        {% endfor %}
+    </section>
+
+
+    <section id="pages">
+        <h4>Pages</h4>
+
+        <form class="form" action="/pages/new" method="POST">
+
+            <div class="form-group">
+
+                <div class="form-row">
+                    <div class="col-md-12">
+                        <h5>New Page</h5>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-3">
+                        <label class="form-label" for="platform">Platform:</label>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="url">Url:</label>
+                    </div>
+
+                    <div class="col-md-3"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-3">
+                        <select class="form-control" name="platform">
+                            <option value="None" selected disabled>Select platform</option>
+                            {% for platform in platforms %}
+                                <option value="{{ platform.id }}">{{ platform.platform }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input class="form-control" name="url" type="url" placeholder="Your URL here."/>
+                    </div>
+
+                    <button class="btn btn-md btn-success col-md-3" type="submit">Add new page</button>
+                </div>
+
+            </div>
+
+        </form>
+
+        <h5>Edit pages</h5>
+
+        {% for page in pages %}
+        <form class="form" action="/pages/{{ page.id }}/edit" method="POST">
+
+            <div class="form-group">
+
+                <div class="form-row">
+                    <div class="col-md-3">
+                        <label class="form-label" for="platform">Platform:</label>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="url">Url:</label>
+                    </div>
+
+                    <div class="col-md-3"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-2">
+                        <select class="form-control" name="platform">
+                            <option value="None" selected disabled>Select platform</option>
+                            {% for platform in platforms %}
+                                {% if platform.id == page.platform_id %}
+                                    <option value="{{ platform.id }}" selected>{{ platform.platform }}</option>
+                                {% else %}
+                                    <option value="{{ platform.id }}">{{ platform.platform }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input class="form-control" name="url" type="url" placeholder="Your URL here." value="{{ page.url }}"/>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn btn-md btn-success" type="submit">Update page</button>
+                    </div>
+
+                    <div class="col-md-2">
+                        <a class="btn btn-md btn-danger" href="/pages/{{ page.id }}/delete">Delete page</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+        {% endfor %}
+    </section>
+
+
+
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Connections
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    {% if requests %}
+        <h3 class="form-group">Connection requests</h3>
+    {% endif %}
+
+    {% for request in requests %}
+
+    <div class="connection row">
+        <div class="col-md-3">
+            <img class="round-small-pic" src="/{{ request.other_user_picture }}" alt="{{ request.other_user_first }} {{ request.other_user_last }}"/>
+        </div>
+        <div class="connection-data col-md-3">
+            <a class="connection-name" href="/profile/{{ request.other_user_id }}"><h5>{{ request.other_user_first }} {{ request.other_user_last }}</h5></a>
+        </div>
+        <div class="connection-data col-md-3"></div>
+        <div class="connection-data col-md-3">
+            {% if session.user_id == request.sender_id %}
+            <span class="btn btn-secondary">Connection request sent</span>
+            {% else %}
+            <a class="btn btn-success" href="/connections/{{ request.other_user_id }}/accept">Accept connection request</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% endfor %}
+
+    <h3 class="form-group">Your connections</h3>
+
+    {% for connection in connections %}
+
+    <div class="connection row">
+        <div class="col-md-3">
+            <img class="round-small-pic" src="/{{ connection.other_user_picture }}" alt="{{ connection.other_user_first }} {{ connection.other_user_last }}"/>
+        </div>
+        <div class="connection-data col-md-3">
+            <a class="connection-name" href="/profile/{{ connection.other_user_id }}"><h5>{{ connection.other_user_first }} {{ connection.other_user_last }}</h5></a>
+        </div>
+        <div class="connection-data col-md-3">
+            <h6 class="text-muted"><em>Connected since {{ connection.date_connected}}</em></h6>
+        </div>
+        <div class="connection-data col-md-3">
+            <a class="btn btn-md btn-danger" href="/connections/{{ connection.id }}/delete">Delete connection</a>
+        </div>
+    </div>
+
+    {% endfor %}
+
+{% endblock %}

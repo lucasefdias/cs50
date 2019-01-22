@@ -1,0 +1,207 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block main %}
+
+    <section id="personal-info" class="form">
+
+        <!-- Only the owner of the profile can edit it -->
+        {% if session.user_id == user.id %}
+        <div>
+            <a class="btn btn-info" href="/profile/{{ session.user_id }}/edit">Edit profile</a>
+        </div>
+        {% endif %}
+
+        <div class="profile-pic">
+            <img class="round-big-pic" src="/{{ user.picture }}" alt="{{ user.first }} {{ user.last }}"/>
+        </div>
+
+        <div>
+            <h1>{{ user.first }} {{ user.last }}</h1>
+        </div>
+
+        <div>
+            <h6><em>Member since {{ user.created_at }}</em></h6>
+        </div>
+
+        <hr/>
+
+        {% if session.user_id != user.id %}
+        <div class="row profile-btn-div">
+            <div class="col-md-3"></div>
+            <div class="col-md-3">
+                <a class="profile-btn btn btn-success" href="/profile/{{ user.id }}/send/{{ session.user_id }}">Send a message</a>
+            </div>
+            <div class="col-md-3">
+                {% if connection %}
+                    {% if connection.is_accepted %}
+                        <span class="profile-btn btn btn-info">Connected</span>
+
+                    {% else %}
+
+                        {% if session.user_id == connection.sender_id %}
+                            <span class="profile-btn btn btn-secondary">Connection request sent</span>
+                        {% else %}
+                            <a class="profile-btn btn btn-info" href="/connections/{{ user.id }}/accept">Accept connection request</a>
+                        {% endif %}
+
+                    {% endif %}
+
+                {% else %}
+                    <a class="profile-btn btn btn-info" href="/profile/{{ user.id }}/connect/{{ session.user_id }}">Send connection request</a>
+                {% endif %}
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+        {% endif %}
+
+        {% if user.birth %}
+        <div>
+            <h5>Birth date : <span class="user-data">{{ user.birth }}</span></h5>
+        </div>
+        {% endif %}
+
+        {% if user.gender %}
+        <div>
+            <h5>Gender: <span class="user-data">{{ user.gender }}</span></h5>
+        </div>
+        {% endif %}
+
+        {% if user.bio != (None and "") %}
+        <div>
+            <h5>Bio:</h5>
+            <p class="user-data">
+                {{ user.bio }}
+            </p>
+        </div>
+        {% endif %}
+
+        {% if location %}
+        <div class="profile-section">
+            <h5>Location:</h5>
+            <p class="user-data">{{ location.full_name }}</p>
+        </div>
+        {% endif %}
+
+    </section>
+
+
+    {% if occupations %}
+    <section id="occupations">
+
+        <h4>Occupations</h4>
+
+        {% for occupation in occupations %}
+        <div class="occupation">
+            <div class="occupation-data row">
+
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <div class="occupation-field">{{ occupation.role }}</div>
+                </div>
+                <div class="col-md-1">
+                    <div>At</div>
+                </div>
+                <div class="col-md-2">
+                    <div class="occupation-field">{{ occupation.entity }}</div>
+                </div>
+                {% if occupation.start %}
+                    {% if occupation.end %}
+                    <div class="col-md-1">
+                        <div>From</div>
+                    </div>
+                    <div class="col-md-2">
+                        <em>{{ occupation.start }}</em>
+                    </div>
+                    <div class="col-md-1">
+                        <div>Until</div>
+                    </div>
+                    <div class="col-md-2">
+                        <em>{{ occupation.end }}</em>
+                    </div>
+                    {% else %}
+                    <div class="col-md-1">
+                        <div>Since</div>
+                    </div>
+                    <div class="col-md-2">
+                        <em>{{ occupation.start }}</em>
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+    </section>
+
+    {% endif %}
+
+    {% if instruments %}
+
+    <section id="instruments">
+
+        <div class="profile-section">
+            <h5>Instruments: </h5>
+            <div>
+                {% for instrument in instruments %}
+                <div>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="instrument col-md-6">
+                            <div class="row">
+                                <div class="instrument-data col-md-6">
+                                {{ instrument.instrument }}
+                                </div>
+                                {% if instrument.proficiency_id %}
+                                <div class="instrument-data col-md-6">
+                                    {{ instrument.proficiency }}
+                                </div>
+                                {% else %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if pages %}
+        <section id="pages">
+            <h5>Pages: </h5>
+            <div>
+                {% for page in pages %}
+                <div class="page">
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="page-data col-md-3">
+                            {{ page.platform }}:
+                        </div>
+                        <div class="page-data col-md-6">
+                            <a href="{{ page.url }}" target="_blank">{{ page.url }}</a>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+
+
+{% endblock %}
