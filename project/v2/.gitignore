@@ -1,0 +1,5 @@
+__pycache__/
+
+stage50/__pycache__/
+
+*.pyc

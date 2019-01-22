@@ -8,7 +8,6 @@ from functools import wraps
 from PIL import Image, ImageOps
 
 
-
 # -------------------------------------------------------------
 # USER AUTH
 # -------------------------------------------------------------
@@ -39,8 +38,8 @@ def create_account(conn, user):
         with conn:
             cursor = conn.execute("""INSERT INTO users (first, last, email, hash, created_at)
                                VALUES (:first, :last, :email, :hashed, datetime('now'))""",
-                               {"first": user["first"], "last": user["last"],
-                               "email": user["email"], "hashed": user["hashed"]})
+                                  {"first": user["first"], "last": user["last"],
+                                   "email": user["email"], "hashed": user["hashed"]})
     except sqlite3.IntegrityError:
         flash("Failed to register user.", "danger")
         return redirect("/register")
@@ -58,7 +57,7 @@ def update_account(conn, user):
             conn.execute("""UPDATE users
                              SET email = :email
                              WHERE id = :userid""",
-                            {"userid": user["id"], "email": user["email"]})
+                         {"userid": user["id"], "email": user["email"]})
     except sqlite3.IntegrityError:
         flash("Failed to update e-mail.", "danger")
         return redirect("/account")
@@ -73,7 +72,7 @@ def update_password(conn, userid, password_hash):
             conn.execute("""UPDATE users
                              SET hash = :password_hash
                              WHERE id = :userid""",
-                            {"userid": userid, "password_hash": password_hash})
+                         {"userid": userid, "password_hash": password_hash})
     except sqlite3.IntegrityError:
         flash("Failed to update password.", "danger")
         return redirect("/account")
@@ -94,60 +93,60 @@ def delete_account(app, conn, userid):
             # Delete user profile
             conn.execute("""DELETE FROM profiles
                             WHERE id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Comments
             conn.execute("""DELETE FROM comments
                             WHERE author_id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Posts
             conn.execute("""DELETE FROM posts
                             WHERE author_id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Connections
             conn.execute("""DELETE FROM connections
                             WHERE
                                 sender_id = :userid
                                 OR
                                 receiver_id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Messages
             conn.execute("""DELETE FROM messages
                             WHERE
                                 sender_id = :userid
                                 OR
                                 receiver_id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Conversations
             conn.execute("""DELETE FROM conversations
                             WHERE
                                 starter_id = :userid
                                 OR
                                 interlocutor_id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Location
             conn.execute("""DELETE FROM locations
                             WHERE id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Occupations
             conn.execute("""DELETE FROM occupations
                             WHERE user_id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Instruments
             conn.execute("""DELETE FROM instruments
                             WHERE user_id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Pages
             conn.execute("""DELETE FROM pages
                             WHERE user_id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # Index
             conn.execute("""DELETE FROM indexes
                             WHERE id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
             # User
             conn.execute("""DELETE FROM users
                             WHERE id = :userid""",
-                            {"userid": userid})
+                         {"userid": userid})
     except sqlite3.IntegrityError:
         flash("Failed to delete account.", "danger")
         return redirect("/account")
@@ -155,6 +154,7 @@ def delete_account(app, conn, userid):
 # -------------------------------------------------------------
 # PROFILE
 # -------------------------------------------------------------
+
 
 def create_profile(conn, userid):
     """ Creates user profile """
@@ -164,7 +164,7 @@ def create_profile(conn, userid):
         with conn:
             insert = conn.execute("""INSERT INTO profiles (id, updated_at)
                                VALUES (:userid, datetime('now'))""",
-                               {"userid": userid})
+                                  {"userid": userid})
     except sqlite3.IntegrityError:
         flash("Failed to create user profile.", "danger")
         return redirect("/feed")
@@ -178,7 +178,7 @@ def get_user_profile(conn, userid):
                         FROM users
                         JOIN profiles ON users.id = profiles.id
                         WHERE users.id=?""",
-                        (userid,))
+                          (userid,))
     row = cursor.fetchone()
     if row is None:
         flash("Failed to load requested profile.", "danger")
@@ -215,7 +215,7 @@ def update_profile(conn, profile):
                                 last = :last
                             WHERE id=:userid
                             """,
-                            {'first': profile["first"], 'last': profile["last"], 'userid': profile["id"]})
+                         {'first': profile["first"], 'last': profile["last"], 'userid': profile["id"]})
 
             conn.execute("""UPDATE profiles
                             SET picture = :picture,
@@ -224,8 +224,8 @@ def update_profile(conn, profile):
                                 bio = :bio
                             WHERE id=:userid
                             """,
-                            {'picture': profile["picture"], 'birth': profile["birth"],
-                            'gender': profile["gender"], 'bio': profile["bio"],'userid': profile["id"]})
+                         {'picture': profile["picture"], 'birth': profile["birth"],
+                          'gender': profile["gender"], 'bio': profile["bio"], 'userid': profile["id"]})
     except sqlite3.IntegrityError:
         flash("Failed to update user profile.", "danger")
         return redirect("/profile/" + profile["id"] + "/edit")
@@ -242,12 +242,13 @@ def save_picture(app, form_picture):
 
     # Define new filename and file path
     picture_filename = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, get_picture_path(picture_filename))
+    picture_path = os.path.join(
+        app.root_path, get_picture_path(picture_filename))
 
     # Resize and crop image for file system and performance optimization
     output_size = (200, 200)
     resized_img = Image.open(form_picture)
-    resized_img = ImageOps.fit(resized_img, output_size, 0, 0, (0.5,0.5))
+    resized_img = ImageOps.fit(resized_img, output_size, 0, 0, (0.5, 0.5))
 
     # Save resized image to file system and return the path to the image
     resized_img.save(picture_path)
@@ -258,7 +259,8 @@ def save_picture(app, form_picture):
 def delete_picture(app, picture_filename):
     """ Deletes a picture from file system given the file path """
 
-    picture_path = os.path.join(app.root_path, get_picture_path(picture_filename))
+    picture_path = os.path.join(
+        app.root_path, get_picture_path(picture_filename))
     os.remove(picture_path)
 
 
@@ -269,6 +271,7 @@ def get_picture_path(picture_name):
 
     return picture_path
 
+
 def get_picture_filename(conn, userid):
     """ Returns user picture filename stored in database """
 
@@ -276,7 +279,7 @@ def get_picture_filename(conn, userid):
     cursor = conn.execute("""SELECT picture
                         FROM profiles
                         WHERE id = :userid""",
-                        {"userid": userid})
+                          {"userid": userid})
     row = cursor.fetchone()
     if row is None:
         flash("Failed to get picture filename.", "danger")
@@ -300,11 +303,10 @@ def create_post(conn, userid, content):
         with conn:
             conn.execute("""INSERT INTO posts (author_id, content, date_published)
                            VALUES (:authorid, :content, datetime('now'))""",
-                           {"authorid": userid, "content": content})
+                         {"authorid": userid, "content": content})
     except sqlite3.IntegrityError:
         flash("Failed to submit post.", "danger")
         return redirect("/feed")
-
 
 
 def get_post(conn, postid):
@@ -331,7 +333,6 @@ def get_post(conn, postid):
     post["author_picture"] = get_picture_path(row[6])
 
     return post
-
 
 
 def get_all_posts(conn):
@@ -375,7 +376,7 @@ def update_post(conn, postid, content):
             conn.execute("""UPDATE posts
                              SET content = :content
                              WHERE id = :postid""",
-                            {"postid": postid, "content": content})
+                         {"postid": postid, "content": content})
     except sqlite3.IntegrityError:
         flash("Failed to update post.", "danger")
         return redirect("/post/" + str(postid) + "/edit")
@@ -389,11 +390,10 @@ def delete_post(conn, postid):
         with conn:
             conn.execute("""DELETE FROM posts
                             WHERE id = :postid""",
-                            {"postid": postid})
+                         {"postid": postid})
     except sqlite3.IntegrityError:
         flash("Failed to delete post.", "danger")
         return redirect("/post/" + str(postid))
-
 
 
 # -------------------------------------------------------------
@@ -408,12 +408,11 @@ def create_comment(conn, userid, postid, content):
         with conn:
             conn.execute("""INSERT INTO comments (author_id, post_id, content, date_published)
                            VALUES (:authorid, :postid, :content, datetime('now'))""",
-                           {"authorid": userid,
-                           "postid": postid, "content": content})
+                         {"authorid": userid,
+                          "postid": postid, "content": content})
     except sqlite3.IntegrityError:
         flash("Failed to submit comment.", "danger")
         return redirect("/post/" + postid)
-
 
 
 def get_all_comments(conn, postid):
@@ -459,7 +458,7 @@ def get_comment(conn, commentid):
                              JOIN users ON comments.author_id = users.id
                              JOIN profiles ON comments.author_id = profiles.id
                              WHERE comments.id = :commentid""",
-                             {"commentid": commentid})
+                          {"commentid": commentid})
     row = cursor.fetchone()
     if row is None:
         return None
@@ -487,7 +486,7 @@ def update_comment(conn, commentid, content):
             conn.execute("""UPDATE comments
                              SET content = :content
                              WHERE id = :commentid""",
-                            {"commentid": commentid, "content": content})
+                         {"commentid": commentid, "content": content})
     except sqlite3.IntegrityError:
         flash("Failed to update comment.", "danger")
         return redirect("/comments/" + str(commentid) + "/edit")
@@ -501,7 +500,7 @@ def delete_comment(conn, postid, commentid):
         with conn:
             conn.execute("""DELETE FROM comments
                             WHERE id = :commentid""",
-                            {"commentid": commentid})
+                         {"commentid": commentid})
     except sqlite3.IntegrityError:
         flash("Failed to delete post.", "danger")
         return redirect("/post/" + str(postid))
@@ -521,7 +520,7 @@ def get_conversation(conn, userid, requesterid):
                                 (starter_id = :userid AND interlocutor_id = :requesterid)
                                 OR
                                 (starter_id = :requesterid AND interlocutor_id = :userid)""",
-                                {"userid": userid, "requesterid": requesterid})
+                          {"userid": userid, "requesterid": requesterid})
     row = cursor.fetchone()
     if row is None:
         return row
@@ -547,7 +546,7 @@ def get_all_conversations(conn, userid):
                                 OR
                                 interlocutor_id = :userid
                              ORDER BY last_updated DESC""",
-                                {"userid": userid})
+                          {"userid": userid})
     rows = cursor.fetchall()
     if rows is None:
         return []
@@ -567,7 +566,8 @@ def get_all_conversations(conn, userid):
         if userid != conversation["starter_id"]:
             interlocutor = get_user_profile(conn, conversation["starter_id"])
         else:
-            interlocutor = get_user_profile(conn, conversation["interlocutor_id"])
+            interlocutor = get_user_profile(
+                conn, conversation["interlocutor_id"])
 
         conversation["interlocutor_real_id"] = interlocutor["id"]
         conversation["interlocutor_first"] = interlocutor["first"]
@@ -587,7 +587,7 @@ def create_conversation(conn, starterid, interlocutorid):
         with conn:
             cursor = conn.execute("""INSERT INTO conversations (starter_id, interlocutor_id, date_started, last_updated)
                                VALUES (:starterid, :interlocutorid, datetime('now'), datetime('now'))""",
-                               {"starterid": starterid, "interlocutorid": interlocutorid})
+                                  {"starterid": starterid, "interlocutorid": interlocutorid})
     except sqlite3.IntegrityError:
         flash("Failed to create conversation.", "danger")
         return redirect("/messages")
@@ -601,7 +601,7 @@ def create_message(conn, message):
         with conn:
             conn.execute("""INSERT INTO messages (conversation_id, sender_id, receiver_id, content, date_sent)
                           VALUES (:conversationid, :senderid, :receiverid, :content, datetime('now'))""",
-                          {"conversationid": message["conversation_id"], "senderid": message["sender_id"],
+                         {"conversationid": message["conversation_id"], "senderid": message["sender_id"],
                           "receiverid": message["receiver_id"], "content": message["content"]})
     except sqlite3.IntegrityError:
         flash("Failed to send message.", "danger")
@@ -618,7 +618,7 @@ def get_messages(conn, conversationid):
                              JOIN profiles ON messages.sender_id = profiles.id
                              WHERE conversation_id = :conversationid
                              ORDER BY date_sent ASC""",
-                            {"conversationid": conversationid})
+                          {"conversationid": conversationid})
     rows = cursor.fetchall()
 
     # Create messages list and appends message objects
@@ -645,6 +645,7 @@ def get_messages(conn, conversationid):
 # CONNECTIONS
 # -------------------------------------------------------------
 
+
 def create_connection(conn, senderid, receiverid):
     """ Creates a new connection """
 
@@ -655,7 +656,7 @@ def create_connection(conn, senderid, receiverid):
                                 (sender_id = :senderid AND receiver_id = :receiverid)
                                 OR
                                 (sender_id = :receiverid AND receiver_id = :senderid)""",
-                                {"senderid": senderid, "receiverid": receiverid})
+                          {"senderid": senderid, "receiverid": receiverid})
     row = cursor.fetchone()
     if row:
         flash("Connection entry already exists.", "danger")
@@ -666,7 +667,7 @@ def create_connection(conn, senderid, receiverid):
         with conn:
             cursor = conn.execute("""INSERT INTO connections (sender_id, receiver_id, date_sent)
                                VALUES (:senderid, :receiverid, datetime('now'))""",
-                               {"senderid": senderid, "receiverid": receiverid})
+                                  {"senderid": senderid, "receiverid": receiverid})
     except sqlite3.IntegrityError:
         flash("Failed to send connection request.", "danger")
         return redirect("/profile" + str(receiverid))
@@ -698,7 +699,7 @@ def get_all_connections(conn, userid):
                                 OR
                                 receiver_id = :userid
                              ORDER BY date_sent DESC""",
-                                {"userid": userid})
+                          {"userid": userid})
     rows = cursor.fetchall()
     if rows is None:
         return []
@@ -747,7 +748,7 @@ def get_connection(conn, userid, other_userid):
                                 (sender_id = :userid AND receiver_id = :other_userid)
                                 OR
                                 (sender_id = :other_userid AND receiver_id = :userid)""",
-                                {"userid": userid, "other_userid": other_userid})
+                          {"userid": userid, "other_userid": other_userid})
     row = cursor.fetchone()
     if row is None:
         return row
@@ -770,7 +771,7 @@ def get_connection_by_id(conn, connectionid):
     cursor = conn.execute("""SELECT *
                              FROM connections
                              WHERE id = :connectionid""",
-                            {"connectionid": connectionid})
+                          {"connectionid": connectionid})
     row = cursor.fetchone()
     if row is None:
         return row
@@ -794,7 +795,7 @@ def delete_connection(conn, connectionid):
         with conn:
             conn.execute("""DELETE FROM connections
                             WHERE id = :connectionid""",
-                            {"connectionid": connectionid})
+                         {"connectionid": connectionid})
     except sqlite3.IntegrityError:
         flash("Failed to delete connection.", "danger")
         return redirect("/connections")
@@ -812,11 +813,10 @@ def create_occupation(conn, userid, role, entity, start, end):
         with conn:
             conn.execute("""INSERT INTO occupations (user_id, role, entity, start, end)
                            VALUES (:userid, :role, :entity, :start, :end)""",
-                           {"userid": userid, "role": role, "entity": entity, "start": start, "end": end})
+                         {"userid": userid, "role": role, "entity": entity, "start": start, "end": end})
     except sqlite3.IntegrityError:
         flash("Failed to add occupation.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
-
 
 
 def get_all_occupations(conn, userid):
@@ -827,7 +827,7 @@ def get_all_occupations(conn, userid):
                         FROM occupations
                         WHERE occupations.user_id=:userid
                         ORDER BY occupations.start DESC""",
-                        {"userid": userid})
+                          {"userid": userid})
     rows = cursor.fetchall()
     if rows is None:
         return []
@@ -848,7 +848,6 @@ def get_all_occupations(conn, userid):
     return occupations
 
 
-
 def get_occupation(conn, occupationid):
     """ Gets an occupation """
 
@@ -856,7 +855,7 @@ def get_occupation(conn, occupationid):
     cursor = conn.execute("""SELECT *
                              FROM occupations
                              WHERE id = :occupationid""",
-                                {"occupationid": occupationid})
+                          {"occupationid": occupationid})
     row = cursor.fetchone()
     if row is None:
         return row
@@ -884,7 +883,7 @@ def update_occupation(conn, occupationid, userid, role, entity, start, end):
                                  start = :start,
                                  end = :end
                              WHERE id = :occupationid""",
-                            {"occupationid": occupationid, "role": role,
+                         {"occupationid": occupationid, "role": role,
                              "entity": entity, "start": start, "end": end})
     except sqlite3.IntegrityError:
         flash("Failed to update occupation.", "danger")
@@ -899,7 +898,7 @@ def delete_occupation(conn, userid, occupationid):
         with conn:
             conn.execute("""DELETE FROM occupations
                             WHERE id = :occupationid""",
-                            {"occupationid": occupationid})
+                         {"occupationid": occupationid})
     except sqlite3.IntegrityError:
         flash("Failed to delete occupation.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
@@ -917,7 +916,7 @@ def create_instrument(conn, userid, instrument, proficiency):
         with conn:
             conn.execute("""INSERT INTO instruments (user_id, instrument, proficiency_id)
                            VALUES (:userid, :instrument, :proficiency)""",
-                           {"userid": userid, "instrument": instrument, "proficiency": proficiency})
+                         {"userid": userid, "instrument": instrument, "proficiency": proficiency})
     except sqlite3.IntegrityError:
         flash("Failed to add instrument.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
@@ -955,7 +954,7 @@ def get_all_instruments(conn, userid):
                         JOIN proficiency ON instruments.proficiency_id = proficiency.id
                         WHERE instruments.user_id=:userid
                         ORDER BY instruments.proficiency_id DESC, instruments.instrument ASC""",
-                        {"userid": userid})
+                          {"userid": userid})
     rows = cursor.fetchall()
     if rows is None:
         return []
@@ -982,7 +981,7 @@ def get_instrument(conn, instrumentid):
     cursor = conn.execute("""SELECT *
                              FROM instruments
                              WHERE id = :instrumentid""",
-                            {"instrumentid": instrumentid})
+                          {"instrumentid": instrumentid})
     row = cursor.fetchone()
     if row is None:
         return row
@@ -1006,7 +1005,7 @@ def update_instrument(conn, instrumentid, userid, instrument, proficiencyid):
                             SET instrument = :instrument,
                                 proficiency_id = :proficiencyid
                             WHERE id = :instrumentid""",
-                            {"instrumentid": instrumentid, "instrument": instrument, "proficiencyid": proficiencyid})
+                         {"instrumentid": instrumentid, "instrument": instrument, "proficiencyid": proficiencyid})
     except sqlite3.IntegrityError:
         flash("Failed to update instrument.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
@@ -1020,7 +1019,7 @@ def delete_instrument(conn, userid, instrumentid):
         with conn:
             conn.execute("""DELETE FROM instruments
                             WHERE id = :instrumentid""",
-                            {"instrumentid": instrumentid})
+                         {"instrumentid": instrumentid})
     except sqlite3.IntegrityError:
         flash("Failed to delete instrument.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
@@ -1082,11 +1081,11 @@ def create_location(conn, location):
                                :userid, :geoname_id, :full_name, :country,
                                :country_isoalpha2, :country_isoalpha3, :admin1,
                                :admin1_code, :city, :latitude, :longitude)""",
-                           {"userid": location["id"], "geoname_id": location["geoname_id"],
-                           "full_name": location["full_name"], "country": location["country"],
-                           "country_isoalpha2": location["country_isoalpha2"], "country_isoalpha3": location["country_isoalpha3"],
-                           "admin1": location["state"], "admin1_code": location["admin1_code"], "city": location["city"],
-                           "latitude": location["latitude"], "longitude": location["longitude"]})
+                         {"userid": location["id"], "geoname_id": location["geoname_id"],
+                          "full_name": location["full_name"], "country": location["country"],
+                          "country_isoalpha2": location["country_isoalpha2"], "country_isoalpha3": location["country_isoalpha3"],
+                          "admin1": location["state"], "admin1_code": location["admin1_code"], "city": location["city"],
+                          "latitude": location["latitude"], "longitude": location["longitude"]})
     except sqlite3.IntegrityError:
         flash("Failed to add location.", "danger")
         return redirect("/profile/" + str(location["id"]) + "/edit")
@@ -1099,12 +1098,12 @@ def get_location(conn, userid):
     cursor = conn.execute("""SELECT *
                              FROM locations
                              WHERE id = :userid""",
-                            {"userid": userid})
+                          {"userid": userid})
     row = cursor.fetchone()
     if row is None:
         return row
 
-    location ={}
+    location = {}
     location["id"] = row[0]
     location["geoname_id"] = row[1]
     location["full_name"] = row[2]
@@ -1132,15 +1131,14 @@ def update_location(conn, location):
                                 admin1 = :admin1, admin1_code = :admin1_code,
                                 city = :city, latitude = :latitude, longitude = :longitude
                             WHERE id = :userid""",
-                           {"userid": location["id"], "geoname_id": location["geoname_id"],
-                           "full_name": location["full_name"], "country": location["country"],
-                           "country_isoalpha2": location["country_isoalpha2"], "country_isoalpha3": location["country_isoalpha3"],
-                           "admin1": location["state"], "admin1_code": location["admin1_code"], "city": location["city"],
-                           "latitude": location["latitude"], "longitude": location["longitude"]})
+                         {"userid": location["id"], "geoname_id": location["geoname_id"],
+                          "full_name": location["full_name"], "country": location["country"],
+                          "country_isoalpha2": location["country_isoalpha2"], "country_isoalpha3": location["country_isoalpha3"],
+                          "admin1": location["state"], "admin1_code": location["admin1_code"], "city": location["city"],
+                          "latitude": location["latitude"], "longitude": location["longitude"]})
     except sqlite3.IntegrityError:
         flash("Failed to update location.", "danger")
         return redirect("/profile/" + str(location["id"]) + "/edit")
-
 
 
 # -------------------------------------------------------------
@@ -1154,7 +1152,7 @@ def create_indexes_user(conn, userid, first, last):
         with conn:
             conn.execute("""INSERT INTO indexes (id, first, last)
                            VALUES (:userid, :first, :last)""",
-                           {"userid": userid, "first": first, "last": last})
+                         {"userid": userid, "first": first, "last": last})
     except sqlite3.IntegrityError:
         flash("Failed to add user to indexes.", "danger")
         return redirect("/feed")
@@ -1169,7 +1167,7 @@ def update_indexes_user(conn, userid, first, last):
             conn.execute("""UPDATE indexes
                             SET first = :first, last = :last
                             WHERE CAST(id AS NUMERIC) = :userid""",
-                           {"userid": userid, "first": first, "last": last})
+                         {"userid": userid, "first": first, "last": last})
     except sqlite3.IntegrityError:
         flash("Failed to update indexes.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
@@ -1186,14 +1184,12 @@ def update_indexes_location(conn, location):
                                 country_isoalpha2 = :country_isoalpha2, country_isoalpha3 = :country_isoalpha3,
                                 admin1 = :admin1, admin1_code = :admin1_code, city =:city
                             WHERE CAST(id AS NUMERIC) = :userid""",
-                           {"userid": location["id"], "full_name": location["full_name"], "country": location["country"],
-                           "country_isoalpha2": location["country_isoalpha2"], "country_isoalpha3": location["country_isoalpha3"],
-                           "admin1": location["state"], "admin1_code": location["admin1_code"], "city": location["city"]})
+                         {"userid": location["id"], "full_name": location["full_name"], "country": location["country"],
+                          "country_isoalpha2": location["country_isoalpha2"], "country_isoalpha3": location["country_isoalpha3"],
+                          "admin1": location["state"], "admin1_code": location["admin1_code"], "city": location["city"]})
     except sqlite3.IntegrityError:
         flash("Failed to update indexes.", "danger")
         return redirect("/profile/" + str(location["id"]) + "/edit")
-
-
 
 
 def update_indexes_occupations(conn, userid):
@@ -1209,11 +1205,10 @@ def update_indexes_occupations(conn, userid):
                             SET role = :role,
                                 entity = :entity
                             WHERE CAST(id AS NUMERIC) = :userid""",
-                           {"userid": userid, "role": occupation_strings["role"], "entity": occupation_strings["entity"]})
+                         {"userid": userid, "role": occupation_strings["role"], "entity": occupation_strings["entity"]})
     except sqlite3.IntegrityError:
         flash("Failed to update indexes.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
-
 
 
 def update_indexes_instruments(conn, userid):
@@ -1229,11 +1224,10 @@ def update_indexes_instruments(conn, userid):
                             SET instrument = :instrument,
                                 proficiency_id = :proficiency_id
                             WHERE CAST(id AS NUMERIC) = :userid""",
-                           {"userid": userid, "instrument": instrument_strings["instrument"], "proficiency_id": instrument_strings["proficiency_id"]})
+                         {"userid": userid, "instrument": instrument_strings["instrument"], "proficiency_id": instrument_strings["proficiency_id"]})
     except sqlite3.IntegrityError:
         flash("Failed to update indexes.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
-
 
 
 def build_indexes_occupation_strings(conn, userid):
@@ -1284,7 +1278,6 @@ def build_indexes_instrument_strings(conn, userid):
     return instrument_strings
 
 
-
 # -------------------------------------------------------------
 # SEARCH
 # -------------------------------------------------------------
@@ -1298,7 +1291,7 @@ def get_results(conn, query):
                         JOIN profiles ON users.id = profiles.id
                         JOIN indexes ON users.id = indexes.id
                         WHERE indexes MATCH :query""",
-                        {"query": query})
+                          {"query": query})
     rows = cursor.fetchall()
     if rows is None:
         return None
@@ -1316,7 +1309,6 @@ def get_results(conn, query):
         results.append(result)
 
     return results
-
 
 
 def add_wildcards(q):
@@ -1355,8 +1347,6 @@ def add_wildcards(q):
     return new_q
 
 
-
-
 # -------------------------------------------------------------
 # PAGES
 # -------------------------------------------------------------
@@ -1370,7 +1360,7 @@ def create_page(conn, userid, url, platform_id):
         with conn:
             conn.execute("""INSERT INTO pages (user_id, url, platform_id)
                            VALUES (:userid, :url, :platform_id)""",
-                           {"userid": userid, "url": url, "platform_id": platform_id})
+                         {"userid": userid, "url": url, "platform_id": platform_id})
     except sqlite3.IntegrityError:
         flash("Failed to add page.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
@@ -1407,7 +1397,7 @@ def get_all_pages(conn, userid):
                         FROM pages
                         JOIN platforms ON pages.platform_id = platforms.id
                         WHERE pages.user_id=:userid""",
-                        {"userid": userid})
+                          {"userid": userid})
     rows = cursor.fetchall()
     if rows is None:
         return []
@@ -1434,7 +1424,7 @@ def get_page(conn, pageid):
     cursor = conn.execute("""SELECT *
                              FROM pages
                              WHERE id = :pageid""",
-                            {"pageid": pageid})
+                          {"pageid": pageid})
     row = cursor.fetchone()
     if row is None:
         return row
@@ -1458,7 +1448,7 @@ def update_page(conn, pageid, userid, url, platform_id):
                             SET url = :url,
                                 platform_id = :platform_id
                             WHERE id = :pageid""",
-                            {"pageid": pageid, "url": url, "platform_id": platform_id})
+                         {"pageid": pageid, "url": url, "platform_id": platform_id})
     except sqlite3.IntegrityError:
         flash("Failed to update page.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")
@@ -1472,7 +1462,7 @@ def delete_page(conn, userid, pageid):
         with conn:
             conn.execute("""DELETE FROM pages
                             WHERE id = :pageid""",
-                            {"pageid": pageid})
+                         {"pageid": pageid})
     except sqlite3.IntegrityError:
         flash("Failed to delete page.", "danger")
         return redirect("/profile/" + str(userid) + "/edit")

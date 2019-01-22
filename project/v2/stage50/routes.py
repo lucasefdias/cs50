@@ -1,58 +1,21 @@
-# ----------------------------------------------------
-# CS50 Final Project:
-#
-# Summary: Web App for connecting musicians and other
-# music professionals.
-# Enables every user to search for people
-# based on their instrument and location.
-#
-# Lucas Emidio Fernandes Dias
-# 30 December 2018
-# ----------------------------------------------------
+from stage50 import app
+from stage50 import conn
 
-# Import modules
-import os
-import sqlite3
-
-from datetime import datetime, timezone
-from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
-from flask_session import Session
-from tempfile import mkdtemp
+from flask import (flash, jsonify, redirect, render_template, request,
+                   session, url_for)
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import (accept_connection, add_wildcards,
-                    create_account, create_comment, create_connection, create_conversation, create_instrument, create_location, create_message, create_page, create_profile, create_post, create_occupation,
-                    delete_account, delete_comment, delete_connection, delete_instrument, delete_page, delete_post, delete_occupation,
-                    get_all_comments, get_all_connections, get_all_conversations, get_all_instruments, get_all_occupations, get_all_pages, get_all_posts,
-                    get_comment, get_connection_by_id, get_messages,
-                    get_connection, get_conversation, get_instrument, get_location, get_occupation, get_page, get_post, get_platforms, get_proficiency, get_results, get_user_profile,
-                    lookup, login_required, save_picture, delete_picture,
-                    update_comment, update_instrument, update_location, update_occupation, update_page,
-                    create_indexes_user,
-                    update_account, update_indexes_instruments, update_indexes_location, update_indexes_occupations, update_indexes_user, update_password, update_profile, update_post)
+from stage50.helpers import (accept_connection, add_wildcards,
+                             create_account, create_comment, create_connection, create_conversation, create_instrument, create_location, create_message, create_page, create_profile, create_post, create_occupation,
+                             delete_account, delete_comment, delete_connection, delete_instrument, delete_page, delete_post, delete_occupation,
+                             get_all_comments, get_all_connections, get_all_conversations, get_all_instruments, get_all_occupations, get_all_pages, get_all_posts,
+                             get_comment, get_connection_by_id, get_messages,
+                             get_connection, get_conversation, get_instrument, get_location, get_occupation, get_page, get_post, get_platforms, get_proficiency, get_results, get_user_profile,
+                             lookup, login_required, save_picture, delete_picture,
+                             update_comment, update_instrument, update_location, update_occupation, update_page,
+                             create_indexes_user,
+                             update_account, update_indexes_instruments, update_indexes_location, update_indexes_occupations, update_indexes_user, update_password, update_profile, update_post)
 
-# Configure app
-app = Flask(__name__)
-
-# Ensure templates are auto-reloaded
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-
-# Ensure responses aren't cached
-@app.after_request
-def after_request(response):
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Expires"] = 0
-    response.headers["Pragma"] = "no-cache"
-    return response
-
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_FILE_DIR"] = mkdtemp()
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
-
-# Database config (create a connection)
-conn = sqlite3.connect('project.db', check_same_thread=False)
 
 # -------------------------------------------------------
 # Routes
@@ -61,6 +24,8 @@ conn = sqlite3.connect('project.db', check_same_thread=False)
 # -------------------------------------------------------
 # LANDING
 # -------------------------------------------------------
+
+
 @app.route("/")
 def index():
     """ Render landing page if user is not logged in """
@@ -70,7 +35,6 @@ def index():
 
     else:
         return render_template("index.html")
-
 
 
 # -------------------------------------------------------
@@ -97,7 +61,7 @@ def login():
 
         # Checks if provided email exists in database
         cursor = conn.execute("SELECT * FROM users WHERE email=?",
-                            (request.form.get("email"),))
+                              (request.form.get("email"),))
         row = cursor.fetchone()
         if row is None:
             flash("User does not exist.", "danger")
@@ -190,7 +154,8 @@ def register():
         create_profile(conn, userid)
 
         # Insert user entry into indexes virtual table
-        create_indexes_user(conn, session["user_id"], user["first"], user["last"])
+        create_indexes_user(
+            conn, session["user_id"], user["first"], user["last"])
 
         # Redirects to profile page
         flash(f"Welcome, {user['first']}!", "success")
@@ -220,7 +185,7 @@ def account():
 
         # Checks if provided email exists in database
         cursor = conn.execute("SELECT * FROM users WHERE email=:email",
-                            {"email": request.form.get("email")})
+                              {"email": request.form.get("email")})
         row = cursor.fetchone()
         if row:
             flash("E-mail is already being used.", "danger")
@@ -260,7 +225,7 @@ def password_change():
         # Ensure current password is correct
         # Query database for user's current password
         cursor = conn.execute("SELECT hash FROM users WHERE id=:userid",
-                            {"userid": session["user_id"]})
+                              {"userid": session["user_id"]})
         row = cursor.fetchone()
 
         if not check_password_hash(row[0], request.form.get("current")):
@@ -391,13 +356,15 @@ def profile_edit(userid):
 
             picture = request.files["picture"]
             picture_name = save_picture(app, picture)
-            old_picture_name = conn.execute("SELECT picture FROM profiles WHERE id=:userid", {'userid': session['user_id']}).fetchone()[0]
+            old_picture_name = conn.execute("SELECT picture FROM profiles WHERE id=:userid", {
+                                            'userid': session['user_id']}).fetchone()[0]
 
             if old_picture_name != 'default.jpg':
                 delete_picture(app, old_picture_name)
 
         else:
-            picture_name = conn.execute("SELECT picture FROM profiles WHERE id=:userid", {'userid': session['user_id']}).fetchone()[0]
+            picture_name = conn.execute("SELECT picture FROM profiles WHERE id=:userid", {
+                                        'userid': session['user_id']}).fetchone()[0]
 
         profile["picture"] = picture_name
 
@@ -405,7 +372,8 @@ def profile_edit(userid):
         update_profile(conn, profile)
 
         # Update indexes virtual table
-        update_indexes_user(conn, session["user_id"], profile["first"], profile["last"])
+        update_indexes_user(
+            conn, session["user_id"], profile["first"], profile["last"])
 
         # Redirect user to profile page
         flash("Your profile has been updated.", "success")
@@ -433,8 +401,6 @@ def profile_edit(userid):
         platforms = get_platforms(conn)
 
         return render_template("profile_edit.html", user=user, location=location, occupations=occupations, instruments=instruments, proficiency=proficiency, pages=pages, platforms=platforms)
-
-
 
 
 # -------------------------------------------------------
@@ -528,7 +494,7 @@ def connection_delete(connectionid):
     else:
 
         # Get connection
-        connection= get_connection_by_id(conn, connectionid)
+        connection = get_connection_by_id(conn, connectionid)
 
         # Check connection ownership
         if session["user_id"] != connection["sender_id"] and session["user_id"] != connection["receiver_id"]:
@@ -573,7 +539,6 @@ def feed():
         return render_template("feed.html", posts=posts)
 
 
-
 @app.route("/post/<postid>", methods=["GET", "POST"])
 @login_required
 def post_page(postid):
@@ -587,7 +552,8 @@ def post_page(postid):
             return redirect("/post/" + postid)
 
         # Insert comment into database
-        create_comment(conn, session["user_id"], postid, request.form.get("content"))
+        create_comment(conn, session["user_id"],
+                       postid, request.form.get("content"))
 
         # Redirect to feed
         flash("Comment submitted!", "success")
@@ -658,7 +624,7 @@ def post_delete(postid):
     else:
 
         # Get post
-        post= get_post(conn, postid)
+        post = get_post(conn, postid)
 
         # Check post ownership
         if session["user_id"] != post["author_id"]:
@@ -752,7 +718,6 @@ def comment_delete(commentid):
         return render_template("delete.html", content=content)
 
 
-
 # -------------------------------------------------------
 # MESSAGES
 # -------------------------------------------------------
@@ -799,7 +764,6 @@ def conversation(conversationid, interlocutorid):
         conversations = get_all_conversations(conn, session["user_id"])
 
         return render_template("conversation.html", messages=messages, conversation_id=int(conversationid), interlocutor_id=interlocutorid, conversations=conversations)
-
 
 
 @app.route("/profile/<userid>/send/<requesterid>")
@@ -883,7 +847,8 @@ def occupation_edit(occupationid):
             return redirect("/profile/" + str(session["user_id"]))
 
         # Update database with form data
-        update_occupation(conn, occupationid, session["user_id"], role, entity, start, end)
+        update_occupation(conn, occupationid,
+                          session["user_id"], role, entity, start, end)
 
         # Update indexes virtual table
         update_indexes_occupations(conn, session["user_id"])
@@ -937,8 +902,6 @@ def occupation_delete(occupationid):
         content["cancel_url"] = "/profile/" + str(session["user_id"]) + "/edit"
 
         return render_template("delete.html", content=content)
-
-
 
 
 # -------------------------------------------------------
@@ -1003,7 +966,8 @@ def instrument_edit(instrumentid):
             return redirect("/profile/" + str(session["user_id"]))
 
         # Update database with form data
-        update_instrument(conn, instrumentid, session["user_id"], instrument, proficiency)
+        update_instrument(conn, instrumentid,
+                          session["user_id"], instrument, proficiency)
 
         # Update indexes virtual table
         update_indexes_instruments(conn, session["user_id"])
@@ -1059,7 +1023,6 @@ def instrument_delete(instrumentid):
         return render_template("delete.html", content=content)
 
 
-
 # -------------------------------------------------------
 # LOCATION
 # -------------------------------------------------------
@@ -1110,7 +1073,7 @@ def location():
             return redirect("/profile/" + str(session["user_id"]) + "/edit")
 
         # Create location object
-        location ={}
+        location = {}
         location["id"] = session["user_id"]
         location["country"] = request.form.get("country")
         location["state"] = request.form.get("state")
@@ -1137,8 +1100,6 @@ def location():
 
     else:
         return redirect("/profile/" + str(session["user_id"]) + "/edit")
-
-
 
 
 # -------------------------------------------------------
