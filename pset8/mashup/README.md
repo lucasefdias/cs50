@@ -11,6 +11,7 @@ Mashup was built using:
 * FrontEnd: HTML (+Jinja), CSS (+Bootstrap), JavaScript (+jQuery and typeahead.js)
 * Backend: Flask
 * Database : SQL (sqlite)
+* APIs : Google News, Google Maps
 
 ## Project structure
 
